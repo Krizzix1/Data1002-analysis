@@ -27,12 +27,12 @@ cleanedDF.index = cleanedDF.index.strftime('%Y-%m')
 test_split = 0.1
 validation_split = 0.3
 
-unsplit_training_data, test_data = train_test_split(cleanedDF, test_size=test_split)
+unsplit_training_data, test_data = train_test_split(cleanedDF, test_size=test_split, shuffle=False)
 
 # Calculate true validation split percentage relative to length or original DF
 validation_split *= validation_split*len(cleanedDF)/(validation_split*len(unsplit_training_data))
 
-training_data, validation_data = train_test_split(unsplit_training_data, test_size=validation_split)
+training_data, validation_data = train_test_split(unsplit_training_data, test_size=validation_split, shuffle=False)
 
 
 print(f"    DATA SPLIT (%)\nTraining Data = {len(training_data)/len(cleanedDF)}\n\
