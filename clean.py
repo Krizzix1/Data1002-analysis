@@ -38,8 +38,8 @@ training_data, validation_data = train_test_split(unsplit_training_data, test_si
 
 
 print(f"    DATA SPLIT (%)\nTraining Data = {len(training_data)/len(cleanedDF)}\n\
-      Validation Data = {len(validation_data)/len(cleanedDF)}\n\
-        Test Data = {len(test_data)/len(cleanedDF)}")
+Validation Data = {len(validation_data)/len(cleanedDF)}\n\
+Test Data = {len(test_data)/len(cleanedDF)}")
 
 
 
