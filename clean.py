@@ -23,6 +23,16 @@ cleanedDF.rename_axis("Date", inplace=True)
 cleanedDF.index = cleanedDF.index.strftime('%Y-%m')
 
 
+#Partition data
+TrainSet = cleanedDF.iloc[:70]
+ValidationSet = cleanedDF.iloc[70:84]
+TestSet = cleanedDF.iloc[84:]
 
+
+
+#Save all dataframes as excel files
 cleanedDF.to_excel("CleanedDataset/Cleaned.xlsx")
+TrainSet.to_excel("CleanedDataset/TrainSet.xlsx")
+ValidationSet.to_excel("CleanedDataset/ValidationSet.xlsx")
+TestSet.to_excel("CleanedDataset/TestSet.xlsx")
 
