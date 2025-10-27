@@ -26,6 +26,7 @@ train_df, val_df = train_test_split(train_val_df, test_size=val_adjusted, random
 
 
 #Save Splits into own csvs
+print(f"Original Data Length: {len(df)}\nTraining Set Length: {len(train_df)} {100*len(train_df)/len(df)}%\nValidation Set Length: {len(val_df)} {100*len(val_df)/len(df)}%\nTest Set Length: {len(test_df)} {100*len(test_df)/len(df)}%")
 train_df.to_csv("CleanedDataset/train.csv", index=False)
 val_df.to_csv("CleanedDataset/validation.csv", index=False)
 test_df.to_csv("CleanedDataset/test.csv", index=False)

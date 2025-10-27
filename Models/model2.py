@@ -8,9 +8,9 @@ from sklearn.metrics import mean_absolute_error, root_mean_squared_error, r2_sco
 
 
 
-train_df = pd.read_csv("../CleanedDataset/train.csv")
-validation_df = pd.read_csv("../CleanedDataset/validation.csv")
-test_df = pd.read_csv("../CleanedDataset/test.csv")
+train_df = pd.read_csv("./CleanedDataset/train.csv")
+validation_df = pd.read_csv("./CleanedDataset/validation.csv")
+test_df = pd.read_csv("./CleanedDataset/test.csv")
 
 
 train_x = train_df.drop(columns=["price"])
@@ -39,7 +39,7 @@ preprocessor = ColumnTransformer(
 # Build simple regression pipeline
 model = Pipeline([
     ('preprocessor', preprocessor),
-    ('regressor', RandomForestRegressor(n_estimators=100, random_state=42))       #THIS NEEDS TO BE TUNED FOR HYPERPARAMETERS TUNING
+    ('regressor', RandomForestRegressor(n_estimators=200, random_state=64))       #THIS NEEDS TO BE TUNED FOR HYPERPARAMETERS TUNING
 ])
 
 # Train

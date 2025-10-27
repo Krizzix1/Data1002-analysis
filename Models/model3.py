@@ -1,58 +1,53 @@
 import pandas as pd
-from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import OneHotEncoder
+import numpy as np
+from sklearn.preprocessing import OneHotEncoder, StandardScaler
 from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import Pipeline
 from sklearn.svm import SVR
-from sklearn.metrics import mean_absolute_error, root_mean_squared_error, r2_score
+from sklearn.metrics import mean_absolute_error, r2_score
 
+# Load data
+train_df = pd.read_csv("./CleanedDataset/train.csv")
+validation_df = pd.read_csv("./CleanedDataset/validation.csv")
+test_df = pd.read_csv("./CleanedDataset/test.csv")
 
-
-train_df = pd.read_csv("../CleanedDataset/train.csv")
-validation_df = pd.read_csv("../CleanedDataset/validation.csv")
-test_df = pd.read_csv("../CleanedDataset/test.csv")
-
+# Log-transform target
+train_y = np.log(train_df["price"])
+val_y = np.log(validation_df["price"])
+test_y = np.log(test_df["price"])
 
 train_x = train_df.drop(columns=["price"])
-train_y = train_df["price"]
-
 val_x = validation_df.drop(columns=["price"])
-val_y = validation_df["price"]
-
 test_x = test_df.drop(columns=["price"])
-test_y = test_df["price"]   
 
-
-
-# Identify column types
+# Columns
 categorical_cols = ['suburb', 'type']
-numerical_cols = [col for col in train_x .columns if col not in categorical_cols]
+numerical_cols = [c for c in train_x.columns if c not in categorical_cols]
 
-# Preprocess categorical → one-hot encode
-preprocessor = ColumnTransformer(
-    transformers=[
-        ('num', 'passthrough', numerical_cols),
-        ('cat', OneHotEncoder(handle_unknown='ignore'), categorical_cols)
-    ]
-)
+# Preprocessing
+preprocessor = ColumnTransformer([
+    ('num', StandardScaler(), numerical_cols),
+    ('cat', OneHotEncoder(handle_unknown='ignore'), categorical_cols)
+])
 
-# Build simple regression pipeline
+# SVR model (tuned)
 model = Pipeline([
     ('preprocessor', preprocessor),
-    ('regressor', SVR(kernel='rbf', C=400, epsilon=1))
+    ('regressor', SVR(kernel='rbf', C=100, epsilon=0.05, gamma='scale'))
 ])
 
 # Train
-model.fit(train_x , train_y)
+model.fit(train_x, train_y)
 
-# Validate performance
-y_val_pred = model.predict(val_x)
-print("Validation MAE:", mean_absolute_error(val_y, y_val_pred))
-print("Validation R2:", r2_score(val_y, y_val_pred))
-#print("Validation RMSE:", root_mean_squared_error(val_y, y_val_pred, squared=False))
+# Predict (convert back from log scale)
+y_val_pred = np.exp(model.predict(val_x))
+y_test_pred = np.exp(model.predict(test_x))
 
-# Test performance
-y_test_pred = model.predict(test_x)
-print("Test MAE:", mean_absolute_error(test_y, y_test_pred))
-print("Test R2:", r2_score(test_y, y_test_pred))
-#print("Test RMSE:", root_mean_squared_error(test_y, y_test_pred, squared=False))
+val_y_actual = np.exp(val_y)
+test_y_actual = np.exp(test_y)
+
+# Evaluate
+print("Validation MAE:", mean_absolute_error(val_y_actual, y_val_pred))
+print("Validation R²:", r2_score(val_y_actual, y_val_pred))
+print("Test MAE:", mean_absolute_error(test_y_actual, y_test_pred))
+print("Test R²:", r2_score(test_y_actual, y_test_pred))

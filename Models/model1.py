@@ -8,9 +8,9 @@ from sklearn.metrics import mean_absolute_error, root_mean_squared_error, r2_sco
 
 
 
-train_df = pd.read_csv("../CleanedDataset/train.csv")
-validation_df = pd.read_csv("../CleanedDataset/validation.csv")
-test_df = pd.read_csv("../CleanedDataset/test.csv")
+train_df = pd.read_csv("./CleanedDataset/train.csv")
+validation_df = pd.read_csv("./CleanedDataset/validation.csv")
+test_df = pd.read_csv("./CleanedDataset/test.csv")
 
 
 train_x = train_df.drop(columns=["price"])
