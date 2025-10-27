@@ -1,4 +1,5 @@
 import pandas as pd
+from sklearn.model_selection import train_test_split
 
 
 #Read excel file of original dataset, (the second sheet and skip first 9 rows as they are headers)
@@ -23,16 +24,28 @@ cleanedDF.rename_axis("Date", inplace=True)
 cleanedDF.index = cleanedDF.index.strftime('%Y-%m')
 
 
-#Partition data
-TrainSet = cleanedDF.iloc[:70]
-ValidationSet = cleanedDF.iloc[70:84]
-TestSet = cleanedDF.iloc[84:]
+''' DATA SPLIT (%)
+training_data = 0.63
+validation_data = 0.27
+test_data = 0.1 '''
+
+test_split = 0.1
+training_split = 0.3
+
+unsplit_training_data, test_data = train_test_split(cleanedDF, test_size=test_split)
+
+training_data, validation_data = train_test_split(unsplit_training_data, test_size=training_split)
+
+
+print(f"    DATA SPLIT (%)\nTraining Data = {len(training_data)/len(cleanedDF)}\n\
+      Validation Data = {len(validation_data)/len(cleanedDF)}\n\
+        Test Data = {len(test_data)/len(cleanedDF)}")
 
 
 
 #Save all dataframes as excel files
 cleanedDF.to_excel("CleanedDataset/Cleaned.xlsx")
-TrainSet.to_excel("CleanedDataset/TrainSet.xlsx")
-ValidationSet.to_excel("CleanedDataset/ValidationSet.xlsx")
-TestSet.to_excel("CleanedDataset/TestSet.xlsx")
+training_data.to_excel("CleanedDataset/TrainSet.xlsx")
+validation_data.to_excel("CleanedDataset/ValidationSet.xlsx")
+test_data.to_excel("CleanedDataset/TestSet.xlsx")
 
