@@ -23,15 +23,14 @@ cleanedDF.columns = ["Median House Price (*1,000)"]
 cleanedDF.rename_axis("Date", inplace=True)
 cleanedDF.index = cleanedDF.index.strftime('%Y-%m')
 
-
+# Partition data into test and validation sets
 test_split = 0.1
 validation_split = 0.3
 
 unsplit_training_data, test_data = train_test_split(cleanedDF, test_size=test_split)
 
+# Calculate true validation split percentage relative to length or original DF
 validation_split *= validation_split*len(cleanedDF)/(validation_split*len(unsplit_training_data))
-
-print(validation_split)
 
 training_data, validation_data = train_test_split(unsplit_training_data, test_size=validation_split)
 
