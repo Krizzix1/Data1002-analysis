@@ -1,48 +1,31 @@
 import pandas as pd
 from sklearn.model_selection import train_test_split
 
-
-#Read excel file of original dataset, (the second sheet and skip first 9 rows as they are headers)
-df = pd.read_excel("OriginalDataset/643202.xlsx", sheet_name=1, skiprows=9)
-
-#Index by the first column which is date
-df.set_index(df.columns[0], inplace=True)
-
-#Get the Median house prices of sydney
-MedianHousePrices = df.iloc[: , 0]
-
-MedianHousePrices = MedianHousePrices.dropna()
-
-#Set the new extracted & cleaned column to its own dataframe
-cleanedDF = pd.DataFrame(MedianHousePrices)
+# Load data
+df = pd.read_csv("OriginalDataset/domain_properties.csv") 
 
 
-
-#Rename Columns & Index
-cleanedDF.columns = ["Median House Price (*1,000)"]
-cleanedDF.rename_axis("Date", inplace=True)
-cleanedDF.index = cleanedDF.index.strftime('%Y-%m')
-
-# Partition data into test and validation sets
-test_split = 0.1
-validation_split = 0.3
-
-unsplit_training_data, test_data = train_test_split(cleanedDF, test_size=test_split, shuffle=False)
-
-# Calculate true validation split percentage relative to length or original DF
-validation_split *= validation_split*len(cleanedDF)/(validation_split*len(unsplit_training_data))
-
-training_data, validation_data = train_test_split(unsplit_training_data, test_size=validation_split, shuffle=False)
+#split date into two floats so it can be interpreted by models.
+df['date_sold'] = pd.to_datetime(df['date_sold'], format='%d/%m/%y')
+df['sold_year'] = df['date_sold'].dt.year.astype(float)
+df['sold_month'] = df['date_sold'].dt.month.astype(float)
+df = df.drop(columns=['date_sold'])
 
 
-print(f"    DATA SPLIT (%)\nTraining Data = {len(training_data)/len(cleanedDF)}\n\
-Validation Data = {len(validation_data)/len(cleanedDF)}\n\
-Test Data = {len(test_data)/len(cleanedDF)}")
+# split percentages
+train_pct = 0.7   
+val_pct = 0.15    
+test_pct = 0.15   
+
+# Step 1: Split off the test set
+train_val_df, test_df = train_test_split(df, test_size=test_pct, random_state=42)
+
+#Splits remaining data into training and validation
+val_adjusted = val_pct / (train_pct + val_pct)
+train_df, val_df = train_test_split(train_val_df, test_size=val_adjusted, random_state=42)
 
 
-#Save all dataframes as excel files
-cleanedDF.to_excel("CleanedDataset/Cleaned.xlsx")
-training_data.to_excel("CleanedDataset/TrainSet.xlsx")
-validation_data.to_excel("CleanedDataset/ValidationSet.xlsx")
-test_data.to_excel("CleanedDataset/TestSet.xlsx")
-
+#Save Splits into own csvs
+train_df.to_csv("CleanedDataset/train.csv", index=False)
+val_df.to_csv("CleanedDataset/validation.csv", index=False)
+test_df.to_csv("CleanedDataset/test.csv", index=False)
