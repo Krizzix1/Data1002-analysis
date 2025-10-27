@@ -24,23 +24,21 @@ cleanedDF.rename_axis("Date", inplace=True)
 cleanedDF.index = cleanedDF.index.strftime('%Y-%m')
 
 
-''' DATA SPLIT (%)
-training_data = 0.63
-validation_data = 0.27
-test_data = 0.1 '''
-
 test_split = 0.1
-training_split = 0.3
+validation_split = 0.3
 
 unsplit_training_data, test_data = train_test_split(cleanedDF, test_size=test_split)
 
-training_data, validation_data = train_test_split(unsplit_training_data, test_size=training_split)
+validation_split *= validation_split*len(cleanedDF)/(validation_split*len(unsplit_training_data))
+
+print(validation_split)
+
+training_data, validation_data = train_test_split(unsplit_training_data, test_size=validation_split)
 
 
 print(f"    DATA SPLIT (%)\nTraining Data = {len(training_data)/len(cleanedDF)}\n\
 Validation Data = {len(validation_data)/len(cleanedDF)}\n\
 Test Data = {len(test_data)/len(cleanedDF)}")
-
 
 
 #Save all dataframes as excel files
